@@ -9,13 +9,38 @@ import(
 var baseUrl = "https://jsonplaceholder.typicode.com"
 
 func main() {
-	var posts, err = fetchPosts()
+
+	posts, err := fetchPosts()
+
 	if err != nil {
 		fmt.Print("Error!", err.Error())
 		return
 	}
 
-	fmt.Println(posts)
+	users, err := fetchUsers()
+	if err != nil {
+		fmt.Print("Error!", err.Error())
+		return
+	}
+
+	for _, post := range posts {
+		for _, user := range users {
+			if user.ID == post.UserID {
+				post.User = user
+			}
+		}
+	}
+
+	jsonData, err := json.Marshal(posts)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	var jsonString = string(jsonData)
+	fmt.Println(jsonString)
+
+
 }
 
 func fetchPosts() ([]Post, error){
@@ -73,8 +98,39 @@ func fetchUsers() ([]User, error){
 }
 
 type Post struct {
-	UserId	int `json:"userId"`
-	Id 	int	`json:"id"`
-	Title string	`json:"title"`
-	Body string	`json:"body"`
+	UserID int64  `json:"userId"`
+	ID     int64  `json:"id"`    
+	Title  string `json:"title"` 
+	Body   string `json:"body"`  
+	User   User   `json:"user"`  
+}
+
+type User struct {
+	ID       int64   `json:"id"`      
+	Name     string  `json:"name"`    
+	Username string  `json:"username"`
+	Email    string  `json:"email"`   
+	Address  Address `json:"address"` 
+	Phone    string  `json:"phone"`   
+	Website  string  `json:"website"` 
+	Company  Company `json:"company"` 
+}
+
+type Address struct {
+	Street  string `json:"street"` 
+	Suite   string `json:"suite"`  
+	City    string `json:"city"`   
+	Zipcode string `json:"zipcode"`
+	Geo     Geo    `json:"geo"`    
+}
+
+type Geo struct {
+	Lat string `json:"lat"`
+	Lng string `json:"lng"`
+}
+
+type Company struct {
+	Name        string `json:"name"`       
+	CatchPhrase string `json:"catchPhrase"`
+	Bs          string `json:"bs"`         
 }
