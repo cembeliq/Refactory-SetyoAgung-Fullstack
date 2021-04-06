@@ -9,6 +9,8 @@ import(
 var baseUrl = "https://jsonplaceholder.typicode.com"
 
 func main() {
+	arrCombine := []Post{}
+	combine := Post{}
 
 	posts, err := fetchPosts()
 
@@ -26,12 +28,14 @@ func main() {
 	for _, post := range posts {
 		for _, user := range users {
 			if user.ID == post.UserID {
-				post.User = user
+				combine = post
+				combine.User = user
+				arrCombine = append(arrCombine, combine)
 			}
 		}
 	}
 
-	jsonData, err := json.Marshal(posts)
+	jsonData, err := json.Marshal(arrCombine)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -42,6 +46,7 @@ func main() {
 
 
 }
+
 
 func fetchPosts() ([]Post, error){
 	var err error
@@ -105,6 +110,7 @@ type Post struct {
 	User   User   `json:"user"`  
 }
 
+
 type User struct {
 	ID       int64   `json:"id"`      
 	Name     string  `json:"name"`    
@@ -115,6 +121,8 @@ type User struct {
 	Website  string  `json:"website"` 
 	Company  Company `json:"company"` 
 }
+
+  
 
 type Address struct {
 	Street  string `json:"street"` 
